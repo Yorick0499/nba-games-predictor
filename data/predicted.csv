@@ -1,0 +1,7 @@
+Predict ID, TeamName, OpponentTeamName, PredTeamScore, PredOpponentTeamScore, RealTeamScore, RealOpponentTeamScore,TeamScoreError,OpponentTeamScoreError,
+1,Utah Jazz, New Orleans Pelicans,111,112,121,128,10,16,1
+2, Los Angeles Lakers, Los Angeles Clippers,112,109,,,-112,-109,0
+3, Miami Heat, New York Knicks,113,109,112,116,-1,7,0
+4, Orlando Magic, Toronto Raptors,105,109,102,104,-3,-5,1
+5, Oklahoma Thunder, San Antonio Spurs,130,109,146,132,16,23,1
+6, Phoenix Suns, Minnesota Timberwolves,124,117,,,-124,-117,0
