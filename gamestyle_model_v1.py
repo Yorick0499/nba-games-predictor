@@ -38,7 +38,7 @@ data2.drop(['teamCity','opponentTeamCity'],axis=1,inplace=True)
 
 
 # Tutaj zdefiniowac ostatnie 5 meczow dla druzyny, dla ktorej przewiduje sie wynik
-team = 'New Orleans Pelicans'
+team = 'New York Knicks'
 jazz_data = data2[data2['teamName']==f'{team}'].head()
 print(jazz_data)
 data.drop(['gameDate','teamName','opponentTeamName','win'],axis=1,inplace=True)
@@ -67,6 +67,7 @@ sort = ['fieldGoalsPercentage','threePointersPercentage','freeThrowsPercentage',
         'assists','steals','blocks','turnovers','foulsPersonal']
 X = X[sort]
 y = data.iloc[:,11:12]
+y = y.squeeze()
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,random_state=123)
 model = RandomForestRegressor(n_estimators=100,random_state=123)
 model.fit(X_train,y_train)
