@@ -1,10 +1,11 @@
 import pandas as pd
 from scipy import stats
 from xgboost import XGBRegressor
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import train_test_split, cross_val_score, RandomizedSearchCV
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import root_mean_squared_error
 import numpy as np
+import pickle
 
 # To są dane treningowe do czyszczenia
 data = pd.read_csv('data/TeamStatistics.csv')
@@ -45,7 +46,7 @@ data2.drop(['teamCity','opponentTeamCity'],axis=1,inplace=True)
 
 
 # Tutaj wyszukac ostatnie 5 meczow dla druzyny, dla ktorej przewiduje sie wynik
-team = 'New York Knicks'
+team = 'Houston Rockets'
 jazz_data = data2[data2['teamName']==f'{team}'].head(8)
 print(jazz_data)
 
@@ -66,7 +67,7 @@ jazz_data = pd.DataFrame(jazz_data)
 
 # Tutaj nalezy okreslic, ile bylo dni przerwy oraz czy mecz bedzie domowy czy nie
 jazz_data['daysOff'] = 2
-jazz_data['home'] = 0
+jazz_data['home'] = 1
 print(jazz_data)
 
 
@@ -89,7 +90,18 @@ y = data.iloc[:,13:14]
 y = y.drop(nan_index)
 y = y.squeeze()
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,random_state=123)
-model = XGBRegressor()
+
+# params = {'n_estimators':[100,200,300,400,500],
+#           'max_depth':[2,3,4,5,6],
+#           'learning_rate':[0.01,0.1,0.2,0.3,0.4],
+#           'subsample':[0.4,0.6,0.8],
+#           'colsample_bytree':[0.4,0.6,0.8],
+#           'reg_alpha':[1,2,3,4],
+#           'reg_lambda':[1,2,3,4]}
+
+# model = RandomizedSearchCV(estimator=XGBRegressor(random_state=123),param_distributions=params,scoring='neg_mean_squared_error',cv=5,verbose=1,n_iter=100)
+
+model = XGBRegressor(subsample=0.8,reg_lambda=1,reg_alpha=4,n_estimators=500,max_depth=3,learning_rate=0.1,colsample_bytree=0.6)
 model.fit(X_train,y_train)
 y_pred = model.predict(X_test)
 
@@ -104,6 +116,33 @@ print(f'{team}: {model.predict(jazz_data)}')
 
 
 
+# pickle.dump(model,open('bin/XGBR_Model_v3.pkl','wb'))
 
 
 
+
+
+
+
+
+# print(f'Best parameters: {model.best_params_}')
+# print(f'Best RMSE: {np.sqrt(-model.best_score_)}')
+# best_model = model.best_estimator_
+# test_score = best_model.score(X_test,y_test)
+# print(f'Model score - test set: {test_score}')
+
+# results = pd.DataFrame(model.cv_results_)
+# print(results[['param_n_estimators', 'param_max_depth','param_learning_rate','param_subsample','param_colsample_bytree',
+#                'param_reg_alpha','param_reg_lambda',
+#                'mean_test_score', 'std_test_score']].sort_values(by='mean_test_score', ascending=False))
+
+
+
+
+
+
+
+# n_iter = 100
+# Best parameters: {'subsample': 0.8, 'reg_lambda': 1, 'reg_alpha': 4, 'n_estimators': 500, 'max_depth': 3, 'learning_rate': 0.1, 'colsample_bytree': 0.6}
+# Best RMSE: 5.9020123169685474
+# Model score - test set: 0.7828288674354553
